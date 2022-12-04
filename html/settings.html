@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AutoFlate Settings page</title>
+    <style>
+        body {
+            width: 90%;
+            max-width: 800px;
+            margin: 2em auto;
+            font: .9em/1.2 Verdana, Helvetica, sans-serif;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0,1fr));
+            grid-gap: 20px;
+        }
+
+        header {
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #bbb;
+            border: 2px solid rgb(79,185,227);
+            text-align: center;
+        }
+
+        header {
+            grid-column: 1 / 13;
+            grid-row: 1;
+        }
+        label {
+            grid-column: 4 / 8;
+        }
+
+        input {
+            grid-column: 8 / 10;
+        }
+
+        .Warning {
+            grid-column: 1 / 13;
+            text-align: center;
+            color: red;
+            font-size: 1.3em;
+        }
+
+
+
+        .save {
+            grid-column: 1 / 13;
+            text-align: center;
+        }
+        .submit {
+            border: none;
+            padding:1%;
+            font-size: 2.5em;
+            background-color:green;
+            color:white;
+            border-radius: 25%;
+            width: 80%;
+        }
+
+        .cancel {
+            grid-column: 1 / 7;
+            text-align: center;
+        }
+        .button_cancel {
+            border: none;
+            padding:2%;
+            font-size: 1.2em;
+            background-color: #F47174;
+            border-radius: 25%;
+            color: white;
+            width: 100%;
+        }
+        .reset {
+            grid-column: 7 / 13;
+            text-align: center;
+        }
+        .reset_button {
+            border: none;
+            padding:2%;
+            font-size: 1.2em;
+            background-color: #E1AD01;
+            color: white;
+            border-radius: 25%;
+            width: 100%;
+         }
+        input.f_size { font-size: 1em;}
+    </style>
+</head>
+
+<body>
+
+<form action=# id="settings_form" method="post">
+<div class="container">
+  <header><h1>AutoFlate Settings Page</h1></header>
+
+    <label for="mem1" >Memory 1:</label>
+    <input type="number" name="mem1" id="mem1" min=5 max =65 value=15 class="f_size">psi
+    <label for="mem2" >Memory 2:</label>
+    <input type="number" name="mem2" id="mem2" min=5 max =65 value=25 class="f_size">psi
+    <label for="mem3" >Memory 3:</label>
+    <input type="number" name="mem3" id="mem3" min=5 max =65 value=30 class="f_size">psi
+    <label for="mem4" >Memory 4:</label>
+    <input type="number" name="mem4" id="mem4" min=5 max =65 value=35 class="f_size">psi
+
+     <p class="Warning">Don't change the following unless you know what you are doing!</p>
+
+    <label for="inflate_valve"> Inflate Valve Size:</label>
+    <input type="number" name="inflate_valve" id="inflate_valve" min=0.25 max =0.75 value=0.5 step=0.05 class="f_size">"
+    <label for="deflate_valve"> Deflate Valve Size:</label>
+    <input type="number" name="deflate_valve" id="deflate_valve" min=0.25 max =0.75 value=0.5 step=0.05 class="f_size">"
+    <label for="press_offset"> Pressure Sensor Offset:</label>
+    <input type="number" name="press_offset" id="press_offset" min=-10 max =10 value=0.0 step=0.01 class="f_size">
+    <label for="press_slope"> Pressure Sensor Slope:</label>
+    <input type="number" name="press_slope" id="press_slope" min=0.1 max =1.9 value=1.0 step=0.01 class="f_size">
+
+   <span class="save">
+        <input type="submit" value="SAVE" class="submit">
+   </span>
+    <p></p>
+    <span class="cancel">
+        <a href="/">
+            <button type="button" class="button_cancel" id="cancel_button">Cancel</button>
+        </a>
+    </span>
+    <span class="reset">
+        <input type="reset" value="Reset to Defaults" class="reset_button">
+    </span>
+</div>
+</form>
+
+<script>
+
+function handleSubmit(event) {
+    event.preventDefault();
+
+    const form = document.getElementById("settings_form");
+    const data = new FormData(event.currentTarget);
+    let value = Object.fromEntries(data.entries());
+    value.topics = data.getAll("topics");
+    //console.log({ value });
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '/set_settings', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify(value));
+    console.log('sending new settings');
+  }
+
+function getSettings() {
+      fetch('/get_settings')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                updateSettings(data);
+            })
+            .catch(function (err) {
+                console.log('error: ' + err);
+            });
+    }
+function updateSettings(data) {
+        document.getElementById("mem1").innerText = data.Mem1;
+        document.getElementById("mem2").innerText = data.Mem2;
+        document.getElementById("mem3").innerText = data.Mem3;
+        document.getElementById("mem4").innerText = data.Mem4;
+        document.getElementById("inflate_valve").innerText = data.Inflate_Valve;
+        document.getElementById("deflate_valve").innerText = data.Deflate_Valve;
+        document.getElementById("press_offset").innerText = data.P_Sensor_Offset;
+        document.getElementById("press_slope").innerText = data.P_Sensor_Slope;
+    }
+
+const form = document.getElementById("settings_form");
+form.addEventListener("submit", handleSubmit);
+getSettings();
+
+</script>
+</body>
+</html>

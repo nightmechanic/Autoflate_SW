@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AutoFlate Main / Idle Page</title>
+    <style>
+        body {
+            width: 90%;
+            max-width: 800px;
+            margin: 2em auto;
+            font: 1.2em/1.2 Verdana, Helvetica, sans-serif;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0,1fr));
+            grid-gap: 20px;
+        }
+
+        header {
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #bbb;
+            border: 2px solid rgb(79,185,227);
+            grid-column: 1 / 13;
+            grid-row: 1;
+            text-align: center;
+        }
+        MCUTemp {
+            grid-column: 1 / 4;
+            grid-row: 2;
+            text-align: center;
+        }
+        SetPressure {
+            grid-column: 5 / 9;
+            grid-row: 2;
+            text-align: center;
+        }
+
+      VBat {
+          grid-column: 9 / 13;
+          grid-row: 2;
+          text-align: center;
+       }
+       CurrentPressure {
+          grid-column: 1 / 13;
+          grid-row: 3;
+          text-align: center;
+          text-size: 2em;
+          color: blue;
+      }
+      State {
+            grid-column: 1 / 13;
+            grid-row: 4;
+            text-align: center;
+            font-size: 1.5em;
+      }
+      Stop {
+            grid-column: 1 / 13;
+            grid-row: 5;
+            text-align: center;
+            }
+
+         .button {
+            border: none;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 2px 2px;
+            cursor: pointer;
+        }
+
+      .button_stop {
+        margin: 20px 2px;
+        font-size: 3em;
+        border-radius: 25%;
+        background-color: #F47174; /* Soft Red */
+        width: 60%;
+      }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <header><h1>AutoFlate Run Page</h1></header>
+    <MCUTemp><p style="padding: 1.5em 0;">HW temp: <span id="dyn_temp1">30</span>&#x2103</p></MCUTemp>
+    <SetPressure>
+        <p>Set Pressure: <br> <span id="set_pressure" style="font-size:1.8em">25</span>psi</p>
+    </SetPressure>
+    <VBat>
+        <p>
+            <svg version="1.1" id="VBAT_svg"
+                         x="0px" y="0px" preserveAspectRatio="xMinYMin"
+                         viewBox="0 0 95 75" style="height:4em; bottom: -0.0em;
+            position: relative;" >
+                    <g>
+                        <path d="M 5 7 H 85 V 65 H 5 Z" fill="transparent" stroke="black" stroke-width="4"/>
+                        <path d="m 11,2 h 20 v 0"  stroke="black" stroke-width="6"/>
+                        <path d="m 62,2 h 15 v 0"  stroke="black" stroke-width="6"/>
+                        <path d="m 13,19 h 16 v 0"  stroke="black" stroke-width="3"/>
+                        <path d="m 63,19 h 15 v 0"  stroke="black" stroke-width="3"/>
+                        <path d="m 21,11 h 0 v 16"  stroke="black" stroke-width="3"/>
+                        <text id="Vbat_T" x="15" y="52" style="font-size:1.1em" > 12.7V</text>
+                    </g>
+            </svg>
+        </p>
+    </VBat>
+    <CurrentPressure>
+        <p>Tire Pressure:</p>
+        <p style="position: relative; left: 0.5em;">
+            <b><span id="dyn_press" style="font-size:3em; ">30</span></b>
+            <span style="vertical-align: 70%">psi</span>
+        </p>
+    </CurrentPressure>
+
+    <State>
+        <p>Activity: <span id="dyn_task">NONE</span></p>
+        <p>Status:<span id="dyn_message">OK</span></p>
+    </State>
+    <Stop>
+        <a href="/stop" id="stop_link"><button class="button button_stop" id="but_stop"><b>STOP</b></button></a>
+    </Stop>
+
+</div>
+
+<script>
+    function getnewData() {
+      fetch('/get_dynamic_data')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                updateData(data);
+                setTimeout(getnewData, 1000);
+            })
+            .catch(function (err) {
+                console.log('error: ' + err);
+                setTimeout(getnewData, 1000);
+            });
+    }
+
+    function updateData(data) {
+        document.getElementById("dyn_press").innerText = data.TirePressure;
+        document.getElementById("dyn_task").innerText = data.Task;
+        document.getElementById("dyn_message").innerText = data.Message;
+        document.getElementById("Vbat_T").textContent = (data.VBat + 'V');
+        document.getElementById("dyn_temp1").innerText = data.MCUTemperature;
+        document.getElementById("set_pressure").innerText = data.SetPressure;
+
+        if (data.State == "IDLE") {
+            document.getElementById("but_stop").style.background = "#bbb";
+            document.getElementById("but_stop").object.textElement.innerText = "BACK";
+            document.getElementById("stop_link").href = "/";
+        }
+    }
+
+    getnewData();
+</script>
+
+</body>
+

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AutoFlate Main / Idle Page</title>
+    <style>
+        body {
+            width: 90%;
+            max-width: 800px;
+            margin: 2em auto;
+            font: 1.2em/1.2 Verdana, Helvetica, sans-serif;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0,1fr));
+            grid-gap: 20px;
+        }
+
+        header {
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #bbb;
+            border: 2px solid rgb(79,185,227);
+            grid-column: 1 / 13;
+            grid-row: 1;
+            text-align: center;
+        }
+        MCUTemp {
+            grid-column: 1 / 4;
+            grid-row: 2;
+            text-align: center;
+        }
+        CurrentPressure {
+          grid-column: 5 / 9;
+          grid-row: 2;
+          text-align: center;
+        }
+        VBat {
+          grid-column: 9 / 13;
+          grid-row: 2;
+          text-align: center;
+        }
+
+        SetPressure {
+          color: blue;
+          grid-column: 1 / 13;
+          grid-row: 3;
+          text-align: center;
+        }
+        SetPressureMinus {
+          grid-column: 1 / 4;
+          grid-row: 4;
+          text-align: center;
+        }
+        SetPressureVal {
+          color: blue;
+          grid-column: 5/ 9;
+          grid-row: 4;
+          text-align: center;
+          position: relative;
+          bottom: 15%;
+        }
+        SetPressurePlus {
+          color: blue;
+          grid-column: 10 / 13;
+          grid-row: 4;
+          text-align: center;
+        }
+        Start {
+            grid-column: 1 / 13;
+            grid-row: 5;
+            text-align: center;
+            }
+
+        Mem1 {
+          grid-column: 1 / 3;
+          grid-row: 6;
+          text-align: center;
+        }
+        Mem2 {
+          grid-column: 4 / 6;
+          grid-row: 6;
+          text-align: center;
+        }
+        Mem3 {
+          grid-column: 7 / 9;
+          grid-row: 6;
+          text-align: center;
+        }
+        Mem4 {
+          grid-column: 10 / 12;
+          grid-row: 6;
+          text-align: center;
+        }
+        Settings {
+        grid-column: 1 / 13;
+          grid-row: 7;
+          text-align: center;
+        }
+
+         .button {
+            border: none;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 2px 2px;
+            cursor: pointer;
+        }
+        .button_plus {
+            border-radius: 50%;
+            background-color: #04AA6D; /* Green */
+        }
+        .button_minus {
+            border-radius: 50%;
+            background-color: #F47174 /* Soft Red */
+        }
+        .button_start {
+            margin: 20px 2px;
+            font-size: 3em;
+            border-radius: 25%;
+            background-color: #5783db;
+            width: 60%;
+        }
+        .button_mem {
+            margin: 20px 2px;
+            font-size: 1.3em;
+            border-radius: 25%;
+            background-color: #E1AD01;
+            width: 3em;
+        }
+        .button_settings {
+            margin: 20px 2px;
+            padding: 10px;
+            font-size: 1.5em;
+            border-radius: 25%;
+            background-color: #5783db;
+            width: 50%;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <header><h2>AutoFlate Idle Page</h2></header>
+    <MCUTemp style="padding: 1.5em 0;">HW temp: <span id="dyn_temp1">30</span>&#x2103</MCUTemp>
+    <VBat>
+    <p>
+         <svg version="1.1" id="VBAT_svg"
+                         x="0px" y="0px" preserveAspectRatio="xMinYMin"
+                         viewBox="0 0 95 75" style="height:4em; bottom: -0.0em;
+                         position: relative;" stroke="black">
+                    <g>
+                        <path d="M 5 7 H 85 V 65 H 5 Z" fill="transparent" stroke-width="4"/>
+                        <path d="m 11,2 h 20 v 0"  stroke="red" stroke-width="6"/>
+                        <path d="m 62,2 h 15 v 0"  stroke-width="6"/>
+                        <path d="m 13,19 h 16 v 0" stroke-width="3"/>
+                        <path d="m 63,19 h 15 v 0" stroke-width="3"/>
+                        <path d="m 21,11 h 0 v 16" stroke-width="3"/>
+                        <text id="Vbat_T" x="13" y="52" style="font-size:1.1em"> 12.7V</text>
+                    </g>
+        </svg>
+        </p>
+    </VBat>
+    <CurrentPressure>
+        <p>Tire Pressure: <br> <span id="dyn_press" style="font-size:1.8em">30</span>psi</p>
+    </CurrentPressure>
+    <SetPressure>
+        <p style="font-size:1.3em">Set Pressure:</p>
+    </SetPressure>
+    <SetPressureMinus>
+        <button class="button button_minus" id="minus_button">
+            <svg
+                    width="40"
+                    height="40"
+                    version="1.1"
+                    id="svg2483"
+                    style="stroke:white;stroke-width:6;stroke-linecap:round;">
+                <defs
+                        id="defs2480" />
+                <g
+                        id="layer1"
+                        transform="translate(0,0)">
+                    <path
+                            d="m 0,22 h 40 v 0"
+                            id="path3489" />
+                </g>
+            </svg>
+    </button>
+    </SetPressureMinus>
+    <SetPressureVal>
+        <p>
+            <input type="number" id="dyn_setpress" style="font-size:3em;color:blue" min=5 max =65 value=25>
+            <span style="font-size:1em; vertical-align: 50%">psi</span>
+        </p>
+    </SetPressureVal>
+     <SetPressurePlus>
+         <button class="button button_plus" id="plus_button">
+            <svg
+                    width="40"
+                    height="40"
+                    version="1.1"
+                    id="svg2483"
+                    style="stroke:white;stroke-width:6;stroke-linecap:round;">
+                <defs
+                        id="defs2480" />
+                <g
+                        id="layer1"
+                        transform="translate(0,0)">
+                    <path
+                            d="m 21,5 v 40 0"
+                            id="path2651" />
+                    <path
+                            d="m 0,22 h 40 v 0"
+                            id="path3489" />
+                </g>
+            </svg>
+        </button>
+     </SetPressurePlus>
+
+    <Start>
+        <a href="/start"><button class="button button_start"><span id="but_start"><b>GO!</b></span></button></a>
+    </Start>
+
+    <Mem1>
+        <button class="button button_mem" id="dyn_mem1">15</button>
+    </Mem1>
+    <Mem2>
+        <button class="button button_mem" id="dyn_mem2">25</button>
+    </Mem2>
+    <Mem3>
+        <button class="button button_mem" id="dyn_mem3">30</button>
+    </Mem3>
+    <Mem4>
+    <button class="button button_mem" id="dyn_mem4">35</button>
+    </Mem4>
+
+    <Settings>
+      <a href="/settings"><button class="button button_settings">Change settings</button></a>
+    </Settings>
+
+</div>
+
+<script>
+    const plusButton = document.getElementById('plus_button');
+    const minusButton = document.getElementById('minus_button');
+    const setPressure = document.getElementById('dyn_setpress');
+    let memBtns = document.querySelectorAll('.button_mem');
+
+    plusButton.addEventListener('click', (event) => {
+      const value = Number(document.getElementById('dyn_setpress').value)
+      if (value < 65){
+        document.getElementById('dyn_setpress').value =  value + 1;
+        sendPressureValue();
+      }
+    });
+    minusButton.addEventListener('click', (event) => {
+      const value = Number(document.getElementById('dyn_setpress').value)
+      if (value > 5){
+        document.getElementById('dyn_setpress').value = value - 1;
+        sendPressureValue();
+      }
+    });
+    setPressure.addEventListener('change', (event) => {
+        sendPressureValue();
+    });
+    memBtns.forEach((btn) => {
+        btn.addEventListener("click", (event) => {
+            const value = Number(btn.innerText);
+            if ( (value >= 5) && (value <= 65) ) {
+                document.getElementById('dyn_setpress').value = value;
+                sendPressureValue();
+            }
+        });
+    });
+
+    function sendPressureValue(){
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", '/set_pressure', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({pressure:  document.getElementById('dyn_setpress').value}));
+        console.log('sending pressure value');
+    }
+
+    function getFirstData() {
+        fetch('/get_dynamic_data')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                updateData(data);
+                updateSetPressure(data);
+                setTimeout(getnewData, 1000);
+                return data;
+            })
+        .catch(function (err) {
+            console.log('error: ' + err);
+            setTimeout(getnewData, 1000);
+    }
+    function getnewData() {
+        fetch('/get_dynamic_data')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                updateData(data);
+                setTimeout(getnewData, 1000);
+                return data;
+            })
+        .catch(function (err) {
+            console.log('error: ' + err);
+            setTimeout(getnewData, 1000);
+
+        });
+    }
+    function getMemories() {
+        fetch('/get_memories')
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            updateMemories(data);
+        })
+        .catch(function (err) {
+            console.log('error: ' + err);
+        });
+    }
+    function updateData(data) {
+        document.getElementById("dyn_temp1").innerText = data.MCUTemperature;
+        document.getElementById("dyn_press").innerText = data.TirePressure;
+        document.getElementById("Vbat_T").textContent = (data.VBat + "V");
+    }
+    function updateMemories(data) {
+        document.getElementById("dyn_mem1").innerText = data.Mem1;
+        document.getElementById("dyn_mem2").innerText = data.Mem2;
+        document.getElementById("dyn_mem3").innerText = data.Mem3;
+        document.getElementById("dyn_mem4").innerText = data.Mem4;
+    }
+    function updateSetPressure(data) {
+        document.getElementById('dyn_setpress').value = Number(data.SetPressure);
+    }
+
+    getMemories();
+    getFirstData();
+
+</script>
+</body>
+
+</html>
